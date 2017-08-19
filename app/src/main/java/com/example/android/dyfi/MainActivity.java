@@ -1,11 +1,10 @@
 
 package com.example.android.dyfi;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
-
-import com.example.android.dyfi.R;
 
 /**
  * Displays the perceived strength of a single earthquake event based on responses from people who
@@ -22,11 +21,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Perform the HTTP request for earthquake data and process the response.
-        Event earthquake = Utils.fetchEarthquakeData(USGS_REQUEST_URL);
 
-        // Update the information displayed to the user.
-        updateUi(earthquake);
+     EarthquakeAsyncTask task=new EarthquakeAsyncTask();
+        task.execute(USGS_REQUEST_URL);
+
     }
 
     /**
@@ -42,4 +40,18 @@ public class MainActivity extends AppCompatActivity {
         TextView magnitudeTextView = (TextView) findViewById(R.id.perceived_magnitude);
         magnitudeTextView.setText(earthquake.perceivedStrength);
     }
+private class EarthquakeAsyncTask extends AsyncTask<String,Void,Event>{
+
+    @Override
+    protected Event doInBackground(String... urls) {
+        // Perform the HTTP request for earthquake data and process the response.
+        Event result = Utils.fetchEarthquakeData(urls[0]);
+
+        return result;
+    }
+protected void onPostExecute(Event result){
+   updateUi(result);
 }
+}
+}
+
